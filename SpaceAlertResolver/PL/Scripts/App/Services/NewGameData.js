@@ -170,6 +170,10 @@ angular.module("spaceAlertModule")
                 newGameData.setManualData = function (manualData) {
                     newGameData.manualData = manualData;
                 }
+
+                newGameData.setLoadedGame = function (loadedGame) {
+                    newGameData.loadedGame = loadedGame;
+                }
             }
 
             newGameData.initialize();

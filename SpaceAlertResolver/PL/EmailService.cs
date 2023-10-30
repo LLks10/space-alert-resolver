@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,6 +9,8 @@ namespace PL
     {
         public static void SendEmail(string messageText, string senderEmailAddress)
         {
+            Debugger.Break();
+            return;
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.UseDefaultCredentials = false;

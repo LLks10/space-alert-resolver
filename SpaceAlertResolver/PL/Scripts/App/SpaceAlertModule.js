@@ -62,6 +62,16 @@
                         }]
                     }
                 })
+                .when('/ResolutionLoadedGame',
+                {
+                    templateUrl: 'templates/Resolution',
+                    controller: 'ResolutionController',
+                    resolve: {
+                        'gameData': ['newGameData', function (newGameData) {
+                            return newGameData.loadedGame;
+                        }]
+                    }
+                })
                 .otherwise({
                     redirectTo: '/Input'
                 });

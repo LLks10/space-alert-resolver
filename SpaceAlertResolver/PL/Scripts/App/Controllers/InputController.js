@@ -3,11 +3,25 @@
 angular.module("spaceAlertModule")
     .controller("InputController",
     [
-        "$scope", '$uibModal', 'inputData', 'newGameData', function($scope, $uibModal, inputData, newGameData) {
+        "$scope", '$uibModal', '$http', '$location', 'inputData', 'newGameData', function ($scope, $uibModal, $http, $location, inputData, newGameData) {
             $scope.allTracks = inputData.tracks;
             $scope.newGameData = newGameData;
             $scope.playerSpecializations = inputData.playerSpecializations;
 
+            var interval = setInterval(function () {
+                $http({
+                    url: "Ping",
+                    method: "GET"
+                }).then(response =>
+                {
+                    if (!response.data)
+                        return;
+                    newGameData.setLoadedGame(response.data);
+                    $location.path("ResolutionLoadedGame");
+                });
+            }, 2000);
+
+            $scope.$on('$destroy', function () { clearInterval(interval); });
             $scope.$watch('newGameData.selectedTracks.redTrack',
                 function(newValue) {
                     newGameData.updateAllSelectedTracks();

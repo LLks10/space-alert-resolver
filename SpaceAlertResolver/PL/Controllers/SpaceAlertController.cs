@@ -15,13 +15,14 @@ namespace PL.Controllers
 {
     public class SpaceAlertController : Controller
     {
+        static IList<GameTurnModel> storedModel;
+
         [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Really?")]
         [HttpGet]
         [Route("NewGameInput")]
         public InputModel NewGameInput()
@@ -53,12 +54,38 @@ namespace PL.Controllers
 
         [HttpPost]
         [Route("ProcessGame")]
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Really?")]
-        public IList<GameTurnModel> ProcessGame([FromBody]NewGameModel newGameModel)
+        public IList<GameTurnModel> ProcessGame([FromBody]NewGameModel newGameModel) => GameToTurnModel(newGameModel);
+
+        [HttpPost]
+        [Route("LoadGame")]
+        public void LoadGame([FromBody]NewGameModel newGameModel)
+        {
+            storedModel = GameToTurnModel(newGameModel);
+        }
+
+        [HttpGet]
+        [Route("Ping")]
+        public IList<GameTurnModel> Ping()
+        {
+            if (storedModel == null)
+                return null;
+
+            var sm = storedModel;
+            storedModel = null;
+            return sm;
+        }
+
+        [HttpPost]
+        [Route("SendGameMessage")]
+        public void SendGameMessage([FromBody]SendGameMessageModel model, string senderEmailAddress)
+        {
+            EmailService.SendEmail(model.MessageText, senderEmailAddress);
+        }
+
+
+        private IList<GameTurnModel> GameToTurnModel(NewGameModel newGameModel)
         {
             var game = newGameModel.ConvertToGame();
-            if (game.Players.First().Actions.All(action => action.FirstActionSegment.SegmentType == PlayerActionType.BattleBots))
-                throw new InvalidOperationException("Successfully triggered test Exception. You can't do that many battle bots!");
 
             game.StartGame();
             var turnModels = new List<GameTurnModel>();
@@ -85,16 +112,7 @@ namespace PL.Controllers
                 game.PerformTurn();
                 turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, "End of Phase"));
             }
-
             return turnModels;
-        }
-
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Really?")]
-        [HttpPost]
-        [Route("SendGameMessage")]
-        public void SendGameMessage([FromBody]SendGameMessageModel model, string senderEmailAddress)
-        {
-            EmailService.SendEmail(model.MessageText, senderEmailAddress);
         }
     }
 }
