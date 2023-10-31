@@ -9,7 +9,6 @@ namespace PL
     {
         public static void SendEmail(string messageText, string senderEmailAddress)
         {
-            Debugger.Break();
             return;
             using (var smtpClient = new SmtpClient())
             {

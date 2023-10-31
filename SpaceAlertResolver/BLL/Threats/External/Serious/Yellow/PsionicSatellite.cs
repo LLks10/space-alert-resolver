@@ -13,12 +13,12 @@ namespace BLL.Threats.External.Serious.Yellow
 
         protected override void PerformXAction(int currentTurn)
         {
-            SittingDuck.ShiftPlayersAfterPlayerActions(new [] {CurrentZone}, currentTurn + 1);
+            SittingDuck.ShiftPlayersAfterPlayerActions(new [] {CurrentZone}, currentTurn);
         }
 
         protected override void PerformYAction(int currentTurn)
         {
-            SittingDuck.ShiftPlayersAfterPlayerActions(EnumFactory.All<StationLocation>().Where(stationLocation => stationLocation.IsOnShip()), currentTurn + 1);
+            SittingDuck.ShiftPlayersAfterPlayerActions(EnumFactory.All<StationLocation>().Where(stationLocation => stationLocation.IsOnShip()), currentTurn);
         }
 
         protected override void PerformZAction(int currentTurn)
