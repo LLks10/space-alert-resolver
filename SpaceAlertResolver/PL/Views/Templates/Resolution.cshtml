@@ -4,7 +4,14 @@
     <h2 class="phase">{{getCurrentPhase().description}}</h2>
     <h3 class="sub-phase">{{getCurrentSubPhase().phaseDescription}}</h3>
 	<div>
-		<h3>Damage</h3>
+		<dl>
+			<dt>Game Status</dt>
+			<dd>{{getCurrentSubPhase().gameStatus}}</dd>
+			<dt ng-if="getCurrentSubPhase().killedBy != null">Killed By</dt>
+			<dd ng-if="getCurrentSubPhase().killedBy != null">{{getCurrentSubPhase().killedBy}}</dd>
+			<dd>Total score {{getCurrentSubPhase().totalScore}}</dd>
+		</dl>
+		<h4>Damage</h4>
 		<table class="table table-condensed">
 			<tr>
 				<th>Red</th>
@@ -16,15 +23,14 @@
 				<td ng-class="{'danger': getCurrentSubPhase().whiteZone.totalDamage > 6}">{{getCurrentSubPhase().whiteZone.totalDamage}}</td>
 				<td ng-class="{'danger': getCurrentSubPhase().blueZone.totalDamage > 6}">{{getCurrentSubPhase().blueZone.totalDamage}}</td>
 			</tr>
+			<tr>
+				<td>Total</td>
+				<td>{{getCurrentSubPhase().totalDamagePenalty}}</td>
+				<td></td>
+			</tr>
 		</table>
-		<dl>
-			<dt>Game Status</dt>
-			<dd>{{getCurrentSubPhase().gameStatus}}</dd>
-			<dt ng-if="getCurrentSubPhase().killedBy != null">Killed By</dt>
-			<dd ng-if="getCurrentSubPhase().killedBy != null">{{getCurrentSubPhase().killedBy}}</dd>
-		</dl>
 		<div ng-if="getCurrentSubPhase().defeatedThreats.length > 0">
-			<h3>Defeated Threats</h3>
+			<h4>Defeated Threats</h4>
 			<table class="table table-condensed">
 				<tr>
 					<th>Threat</th>
@@ -41,7 +47,7 @@
 			</table>
 		</div>
 		<div ng-if="getCurrentSubPhase().survivedThreats.length > 0">
-			<h3>Survived Threats</h3>
+			<h4>Survived Threats</h4>
 			<table class="table table-condensed">
 				<tr>
 					<th>Threat</th>
@@ -57,9 +63,51 @@
 				</tr>
 			</table>
 		</div>
-		<div ng-if="getCurrentSubPhase().knockedOutPlayers">
-			<h3>Knocked Out Players</h3>
-			<div ng-repeat="player in getCurrentSubPhase().knockedOutPlayers">{{player.playerColor}}</div>
+		<div ng-if="getCurrentSubPhase().totalObservationScore > 0">
+			<h4>Raampje kijken</h4>
+			<table class="table table-condensed">
+				<tr>
+					<th>Phase 1</th>
+					<th>Phase 2</th>
+					<th>Phase 3</th>
+				</tr>
+				<tr>
+					<td>{{getCurrentSubPhase().observationScores[0]}}</td>
+					<td>{{getCurrentSubPhase().observationScores[1]}}</td>
+					<td>{{getCurrentSubPhase().observationScores[2]}}</td>
+				</tr>
+				<tr>
+					<td>Total</td>
+					<td>{{getCurrentSubPhase().totalObservationScore}}</td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		<div ng-if="getCurrentSubPhase().totalKnockedOutPenalty > 0">
+			<h4>Knockouts</h4>
+			<table class="table table-condensed">
+				<tr>
+					<th>Unit</th>
+					<th>Penalty</th>
+				</tr>
+				<tr ng-repeat="player in getCurrentSubPhase().knockedOutPlayers">
+					<td>{{player.playerColor}}</td>
+					<td>-2</td>
+				</tr>
+				<tr ng-if="getCurrentSubPhase().knockedOutBattleBots > 0">
+					<td>Battle bot</td>
+					<td>-1</td>
+				</tr>
+				<tr ng-if="getCurrentSubPhase().knockedOutBattleBots > 1">
+					<td>Battle bot</td>
+					<td>-1</td>
+				</tr>
+				<tr>
+					<td>Total</td>
+					<td>{{getCurrentSubPhase().totalKnockedOutPenalty}}</td>
+					<td></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 	<div class="speed-selection-container">

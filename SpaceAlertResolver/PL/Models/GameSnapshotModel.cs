@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BLL;
 using BLL.Threats.Internal;
@@ -15,14 +16,22 @@ namespace PL.Models
         public InterceptorsZoneModel InterceptorsZone { get; set; }
         public string KilledBy { get; set; }
         public string GameStatus { get; set; }
+        public int MostZoneDamage => Math.Max(Math.Max(RedZone.TotalDamage, WhiteZone.TotalDamage), BlueZone.TotalDamage);
+        public int TotalDamagePenalty => -(RedZone.TotalDamage + WhiteZone.TotalDamage + BlueZone.TotalDamage + MostZoneDamage);
 
         public IEnumerable<ThreatModel> DefeatedThreats { get; set; }
         public IEnumerable<ThreatModel> SurvivedThreats { get; set; }
-        public int TotalDefeatedPoints { get { return DefeatedThreats.Sum(threat => threat.Points); } }
-        public int TotalSurvivedPoints { get { return SurvivedThreats.Sum(threat => threat.Points); } }
+        public int TotalDefeatedPoints => DefeatedThreats.Sum(threat => threat.Points);
+        public int TotalSurvivedPoints => SurvivedThreats.Sum(threat => threat.Points);
+
+        public IEnumerable<int> ObservationScores { get; set; }
+        public int TotalObservationScore { get; set; }
 
         public IEnumerable<PlayerModel> KnockedOutPlayers { get; set; }
+        public int KnockedOutBattleBots { get; set; }
+        public int TotalKnockedOutPenalty => KnockedOutPlayers.Count() * -2 - KnockedOutBattleBots;
 
+        public int TotalScore => TotalDefeatedPoints + TotalSurvivedPoints + TotalObservationScore + TotalDamagePenalty + TotalKnockedOutPenalty;
         public string PhaseDescription { get; }
         public int TurnNumber { get; }
 
@@ -48,7 +57,12 @@ namespace PL.Models
             GameStatus = game.GameStatus.GetDisplayName();
             DefeatedThreats = game.ThreatController.DefeatedThreats.Select(threat => new ThreatModel(threat)).ToList();
             SurvivedThreats = game.ThreatController.SurvivedThreats.Select(threat => new ThreatModel(threat)).ToList();
+            ObservationScores = game.SittingDuck.WhiteZone.LowerWhiteStation.VisualConfirmationComponent.BestConfirmationPerPhase.ToList();
+            TotalObservationScore = game.SittingDuck.WhiteZone.LowerWhiteStation.VisualConfirmationComponent.TotalVisualConfirmationPoints;
             KnockedOutPlayers = game.Players.Where(player => player.IsKnockedOut).Select(player => new PlayerModel(player)).ToList();
+            KnockedOutBattleBots = game.Players.Count(player => player.BattleBots is { IsDisabled: true });
+            KnockedOutBattleBots += game.SittingDuck.RedZone.LowerRedStation.BattleBotsComponent.BattleBots is { IsDisabled: true } ? 1 : 0;
+            KnockedOutBattleBots += game.SittingDuck.BlueZone.UpperBlueStation.BattleBotsComponent.BattleBots is { IsDisabled: true } ? 1 : 0;
             Players = game.Players.Select(player => new PlayerModel(player)).ToList();
         }
 
