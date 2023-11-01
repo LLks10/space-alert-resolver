@@ -6,14 +6,19 @@ using BLL.Threats.Internal;
 using BLL.Tracks;
 using Microsoft.AspNetCore.Mvc;
 using PL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
 	public class SpaceAlertController : Controller
 	{
 		static IList<GameTurnModel> storedModel;
+		static TaskCompletionSource<bool> storedModelSource;
+		static object lck = new object();
 
 		[HttpGet]
 		public ActionResult Index()
@@ -59,17 +64,48 @@ namespace PL.Controllers
 		public void LoadGame([FromBody] NewGameModel newGameModel)
 		{
 			storedModel = GameToTurnModel(newGameModel);
+			lock (lck)
+			{
+				storedModelSource?.SetResult(true);
+			}
 		}
 
 		[HttpGet]
 		[Route("Ping")]
-		public IList<GameTurnModel> Ping()
+		public async Task<IList<GameTurnModel>> Ping(CancellationToken ct)
 		{
-			if (storedModel == null)
+			IList<GameTurnModel> sm;
+			lock (lck)
+			{
+				if (storedModel != null)
+				{
+					sm = storedModel;
+					storedModel = null;
+					return sm;
+				}
+
+				storedModelSource ??= new TaskCompletionSource<bool>();
+			}
+
+			var lct = CancellationTokenSource.CreateLinkedTokenSource(ct);
+			lct.CancelAfter(TimeSpan.FromSeconds(60 *2));
+
+			var timeout = Task.Delay(-1, lct.Token);
+			var completed = await Task.WhenAny(storedModelSource.Task, timeout);
+
+			if (completed == timeout)
 				return null;
 
-			var sm = storedModel;
-			storedModel = null;
+			lock (lck)
+			{
+				storedModelSource = null;
+
+				if (storedModel == null)
+					return null;
+
+				sm = storedModel;
+				storedModel = null;
+			}
 			return sm;
 		}
 

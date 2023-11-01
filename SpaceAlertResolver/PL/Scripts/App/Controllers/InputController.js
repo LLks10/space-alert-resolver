@@ -3,25 +3,28 @@
 angular.module("spaceAlertModule")
     .controller("InputController",
     [
-        "$scope", '$uibModal', '$http', '$location', 'inputData', 'newGameData', function ($scope, $uibModal, $http, $location, inputData, newGameData) {
+        "$scope", '$uibModal', '$http', '$location', '$q', 'inputData', 'newGameData', function ($scope, $uibModal, $http, $location, $q, inputData, newGameData) {
             $scope.allTracks = inputData.tracks;
             $scope.newGameData = newGameData;
             $scope.playerSpecializations = inputData.playerSpecializations;
 
-            var interval = setInterval(function () {
-                $http({
-                    url: "Ping",
-                    method: "GET"
-                }).then(response =>
-                {
-                    if (!response.data)
+            var cancellation = $q.defer();
+            var pingServer = function () {
+                $http.get('Ping', { timeout: cancellation.promise })
+                .then(response => {
+                    if ($location.url() != "/Input")
                         return;
+                    if (!response.data) {
+                        setTimeout(pingServer, 0);
+                        return;
+                    }
                     newGameData.setLoadedGame(response.data);
                     $location.path("ResolutionLoadedGame");
-                });
-            }, 2000);
+                }).catch(err => { if (err.config.timeout.$$state.value !== "cancel") setTimeout(pingServer, 3000) });
+            };
+            setTimeout(pingServer, 0);
 
-            $scope.$on('$destroy', function () { clearInterval(interval); });
+            $scope.$on('$destroy', function () { cancellation.resolve('cancel'); });
             $scope.$watch('newGameData.selectedTracks.redTrack',
                 function(newValue) {
                     newGameData.updateAllSelectedTracks();
