@@ -199,11 +199,13 @@ namespace BLL
             
             foreach (var player in playerOrder)
             {
-                EventMaster.LogEvent(player.PlayerColor.ToString());
+                var action = player.GetActionForTurn(CurrentTurn);
+                EventMaster.LogEvent($"{player.PlayerColor} {action.FirstActionSegment.SegmentType}");
                 while (!player.GetActionForTurn(CurrentTurn).AllActionsPerformed())
                     player.CurrentStation.PerformNextPlayerAction(player, CurrentTurn);
             }
             ThreatController.OnPlayerActionsEnded();
+            EventMaster.LogEvent("");
         }
 
         private void PerformEndOfTurn()

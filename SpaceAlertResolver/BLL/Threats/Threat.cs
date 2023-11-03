@@ -161,7 +161,6 @@ namespace BLL.Threats
 
         public void Move(int currentTurn, int amount)
         {
-            EventMaster.LogEvent("Moving");
             Moving(null, null);
             var oldPosition = Position;
             for (var i = 0; i < amount; i++)
@@ -188,7 +187,6 @@ namespace BLL.Threats
                     }
             }
             Moved(null, null);
-            EventMaster.LogEvent("Done Moving");
         }
 
         protected int Attack(int amount, ThreatDamageType? threatDamageType = null)

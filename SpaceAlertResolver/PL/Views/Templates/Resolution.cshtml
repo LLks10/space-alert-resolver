@@ -7,9 +7,9 @@
 		<dl>
 			<dt>Game Status</dt>
 			<dd>{{getCurrentSubPhase().gameStatus}}</dd>
+			<dd>Total score {{getCurrentSubPhase().totalScore}}</dd>
 			<dt ng-if="getCurrentSubPhase().killedBy != null">Killed By</dt>
 			<dd ng-if="getCurrentSubPhase().killedBy != null">{{getCurrentSubPhase().killedBy}}</dd>
-			<dd>Total score {{getCurrentSubPhase().totalScore}}</dd>
 		</dl>
 		<h4>Damage</h4>
 		<table class="table table-condensed">

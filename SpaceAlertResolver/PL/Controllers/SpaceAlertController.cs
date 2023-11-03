@@ -127,9 +127,11 @@ namespace PL.Controllers
 			game.PhaseStarting += (sender, eventArgs) =>
 			{
 				var lastPhase = turnModels.Last().Phases.LastOrDefault();
-				lastPhase?.SubPhases.Add(new GameSnapshotModel(game, "End of Phase"));
+				if(lastPhase != null && lastPhase.SubPhases.Count == 0)
+					lastPhase.SubPhases.Add(new GameSnapshotModel(game, ""));
+				
 				turnModels.Last().Phases.Add(new GamePhaseModel { Description = eventArgs.PhaseHeader });
-				turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, "Start of Phase"));
+				//turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, "Start of Phase"));
 			};
 			game.EventMaster.EventTriggered += (sender, eventArgs) =>
 			{
@@ -144,7 +146,8 @@ namespace PL.Controllers
 			{
 				turnModels.Add(new GameTurnModel { Turn = game.CurrentTurn });
 				game.PerformTurn();
-				turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, "End of Phase"));
+				if (turnModels.Last().Phases.Last().SubPhases.Count == 0)
+					turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, ""));
 			}
 			return turnModels;
 		}
