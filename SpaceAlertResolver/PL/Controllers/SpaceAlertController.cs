@@ -16,8 +16,8 @@ namespace PL.Controllers
 {
 	public class SpaceAlertController : Controller
 	{
-		static IList<GameTurnModel> storedModel;
-		static TaskCompletionSource<bool> storedModelSource;
+		static IList<GameTurnModel> storedTurnModel;
+		static TaskCompletionSource<bool> storedTurnModelSource;
 		static object lck = new object();
 
 		[HttpGet]
@@ -63,10 +63,10 @@ namespace PL.Controllers
 		[Route("LoadGame")]
 		public void LoadGame([FromBody] NewGameModel newGameModel)
 		{
-			storedModel = GameToTurnModel(newGameModel);
+			storedTurnModel = GameToTurnModel(newGameModel);
 			lock (lck)
 			{
-				storedModelSource?.SetResult(true);
+				storedTurnModelSource?.SetResult(true);
 			}
 		}
 
@@ -77,34 +77,34 @@ namespace PL.Controllers
 			IList<GameTurnModel> sm;
 			lock (lck)
 			{
-				if (storedModel != null)
+				if (storedTurnModel != null)
 				{
-					sm = storedModel;
-					storedModel = null;
+					sm = storedTurnModel;
+					storedTurnModel = null;
 					return sm;
 				}
 
-				storedModelSource ??= new TaskCompletionSource<bool>();
+				storedTurnModelSource ??= new TaskCompletionSource<bool>();
 			}
 
 			var lct = CancellationTokenSource.CreateLinkedTokenSource(ct);
 			lct.CancelAfter(TimeSpan.FromSeconds(60 *2));
 
 			var timeout = Task.Delay(-1, lct.Token);
-			var completed = await Task.WhenAny(storedModelSource.Task, timeout);
+			var completed = await Task.WhenAny(storedTurnModelSource.Task, timeout);
 
 			if (completed == timeout)
 				return null;
 
 			lock (lck)
 			{
-				storedModelSource = null;
+				storedTurnModelSource = null;
 
-				if (storedModel == null)
+				if (storedTurnModel == null)
 					return null;
 
-				sm = storedModel;
-				storedModel = null;
+				sm = storedTurnModel;
+				storedTurnModel = null;
 			}
 			return sm;
 		}
@@ -116,6 +116,31 @@ namespace PL.Controllers
 			EmailService.SendEmail(model.MessageText, senderEmailAddress);
 		}
 
+		[HttpPost]
+		[Route("BatchProcessGames")]
+		public IActionResult BatchProcessGames([FromBody] BatchProcessModel batchProcessModel)
+		{
+			if (batchProcessModel.Games is null || batchProcessModel.Games.Count == 0)
+				return BadRequest("No games given");
+
+			BatchGameResultsModel result = new BatchGameResultsModel();
+
+			foreach(var gameModel in batchProcessModel.Games)
+			{
+				var game = gameModel.ConvertToGame();
+				game.StartGame();
+				while (game.GameStatus == GameStatus.InProgress)
+					game.PerformTurn();
+
+				result.Results.Add(new GameResultModel
+				{
+					Won = game.GameStatus == GameStatus.Won,
+					Score = new GameSnapshotModel(game, "").TotalScore,
+				});
+			}
+
+			return Ok(result);
+		}
 
 		private IList<GameTurnModel> GameToTurnModel(NewGameModel newGameModel)
 		{
