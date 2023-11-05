@@ -21,7 +21,7 @@
 
         protected override void PerformZAction(int currentTurn)
         {
-            Attack(3);
+            Attack(5);
         }
 
         public override string Id { get; } = "SE1-02";
