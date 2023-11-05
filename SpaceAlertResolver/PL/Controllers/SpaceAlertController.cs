@@ -131,7 +131,6 @@ namespace PL.Controllers
 					lastPhase.SubPhases.Add(new GameSnapshotModel(game, ""));
 				
 				turnModels.Last().Phases.Add(new GamePhaseModel { Description = eventArgs.PhaseHeader });
-				//turnModels.Last().Phases.Last().SubPhases.Add(new GameSnapshotModel(game, "Start of Phase"));
 			};
 			game.EventMaster.EventTriggered += (sender, eventArgs) =>
 			{

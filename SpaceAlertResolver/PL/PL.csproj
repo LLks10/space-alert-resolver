@@ -18,6 +18,9 @@
     <Content Update="wwwroot\css\*.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\Images\**\*.png;wwwroot\Images\**\*.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
