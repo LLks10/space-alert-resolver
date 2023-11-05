@@ -33,7 +33,8 @@ namespace BLL
             IList<Threat> bonusThreats,
             IDictionary<ZoneLocation, TrackConfiguration> externalTrackConfigurationsByZone,
             TrackConfiguration internalTrackConfiguration,
-            ILookup<ZoneLocation, DamageToken> initialDamage)
+            ILookup<ZoneLocation, DamageToken> initialDamage,
+            bool variableRangeInterceptorsEnabled = true)
         {
             EventMaster = new EventMaster();
             GameStatus = GameStatus.InProgress;
@@ -44,7 +45,7 @@ namespace BLL
             var internalTrack = new Track(internalTrackConfiguration);
             ThreatController = new ThreatController(externalTracksByZone, internalTrack, externalThreats, internalThreats, EventMaster);
             ThreatController.PhaseStarting += (sender, args) =>  PhaseStarting(this, args);
-            SittingDuck = new SittingDuck(ThreatController, this, initialDamage);
+            SittingDuck = new SittingDuck(ThreatController, this, initialDamage, variableRangeInterceptorsEnabled);
             var allThreats = bonusThreats.Concat(internalThreats).Concat(externalThreats);
             foreach (var threat in allThreats)
                 threat.Initialize(SittingDuck, ThreatController, EventMaster);

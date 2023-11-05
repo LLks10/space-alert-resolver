@@ -9,14 +9,17 @@ namespace BLL.ShipComponents
     {
         public InterceptorsInSpaceComponent InterceptorComponent { get; private set; }
         public PlayerInterceptorDamage PlayerInterceptorDamage { get; private set; }
+        public bool VariableRangeInterceptorsEnabled { get; private set; }
 
         internal InterceptorStation(
             StationLocation stationLocation,
             ThreatController threatController,
-            InterceptorsInSpaceComponent interceptorComponent) : base(stationLocation, threatController)
+            InterceptorsInSpaceComponent interceptorComponent,
+            bool variableRangeInterceptorsEnabled) : base(stationLocation, threatController)
         {
             MovingIn += UseBattleBots;
             InterceptorComponent = interceptorComponent;
+            VariableRangeInterceptorsEnabled = variableRangeInterceptorsEnabled && false;
         }
 
         private void PerformCAction(Player performingPlayer, int currentTurn)
@@ -82,20 +85,27 @@ namespace BLL.ShipComponents
             switch (playerActionType)
             {
                 case PlayerActionType.Charlie:
+                    if (!VariableRangeInterceptorsEnabled)
+                        goto default;
+
                     PerformCAction(performingPlayer, currentTurn);
                     break;
+
                 case PlayerActionType.BattleBots:
                     UseBattleBots(performingPlayer, false);
                     break;
+
                 case PlayerActionType.HeroicBattleBots:
                     UseBattleBots(performingPlayer, true);
                     break;
+
                 case PlayerActionType.AdvancedSpecialization:
-                    if (performingPlayer.Specialization == PlayerSpecialization.SquadLeader)
-                        UseBattleBots(performingPlayer, true);
-                    else
-                        PerformInvalidAction(performingPlayer, currentTurn);
+                    if (performingPlayer.Specialization != PlayerSpecialization.SquadLeader)
+                        goto default;
+
+					UseBattleBots(performingPlayer, true);
                     break;
+
                 default:
                     PerformInvalidAction(performingPlayer, currentTurn);
                     break;

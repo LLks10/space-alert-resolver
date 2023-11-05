@@ -22,6 +22,7 @@ namespace PL.Models
         public TrackSnapshotModel BlueTrack { get; set; }
         public TrackSnapshotModel InternalTrack { get; set; }
         public IEnumerable<InitialDamageModel> InitialDamageModels { get; set; }
+        public bool? VariableRangeInterceptors { get; set; }
 
         public Game ConvertToGame()
         {
@@ -55,7 +56,8 @@ namespace PL.Models
                 .Select(threat => ((IThreatWithBonusThreat<ExternalThreat>)threat).BonusThreat);
             var bonusThreats = bonusExternalThreats.Cast<Threat>().Concat(bonusInternalThreats).ToList();
             var damageTokens = InitialDamageModels.ToLookup(model => model.ZoneLocation, model => model.DamageToken);
-            return new Game(players, internalThreats, externalThreats, bonusThreats, externalTracksByZone, internalTrack, damageTokens);
+            var variableRangeInterceptors = VariableRangeInterceptors ?? true;
+            return new Game(players, internalThreats, externalThreats, bonusThreats, externalTracksByZone, internalTrack, damageTokens, variableRangeInterceptors);
         }
 
         private static IList<ExternalThreat> CreateExternalThreats(IEnumerable<ExternalThreatModel> threatModels, ZoneLocation zone)

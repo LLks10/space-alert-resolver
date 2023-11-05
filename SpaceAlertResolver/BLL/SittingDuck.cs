@@ -26,7 +26,7 @@ namespace BLL
         private Doors BlueDoors { get; }
         private Doors RedDoors { get; }
 
-        internal SittingDuck(ThreatController threatController, Game game, ILookup<ZoneLocation, DamageToken> initialDamage)
+        internal SittingDuck(ThreatController threatController, Game game, ILookup<ZoneLocation, DamageToken> initialDamage, bool variableRangeInterceptorsEnabled)
         {
             ThreatController = threatController;
             threatController.ThreatAttackedShip += TakeAttack;
@@ -39,9 +39,9 @@ namespace BLL
 
             var interceptors = new Interceptors();
 
-            var interceptorStation1 = CreateInterceptorStation1(threatController);
-            var interceptorStation2 = CreateInterceptorStation2(threatController);
-            var interceptorStation3 = CreateInterceptorStation3(threatController);
+            var interceptorStation1 = CreateInterceptorStation1(threatController, variableRangeInterceptorsEnabled);
+            var interceptorStation2 = CreateInterceptorStation2(threatController, variableRangeInterceptorsEnabled);
+            var interceptorStation3 = CreateInterceptorStation3(threatController, variableRangeInterceptorsEnabled);
 
             BlueDoors = blueDoors;
             RedDoors = redDoors;
@@ -60,33 +60,36 @@ namespace BLL
                 .ToDictionary(station => station.StationLocation);
         }
 
-        private InterceptorStation CreateInterceptorStation3(ThreatController threatController)
+        private InterceptorStation CreateInterceptorStation3(ThreatController threatController, bool variableRangeInterceptorsEnabled)
         {
             var interceptorComponent3 = new InterceptorsInSpaceComponent(this, StationLocation.Interceptor3);
             var interceptorStation3 = new InterceptorStation(
                 StationLocation.Interceptor3,
                 threatController,
-                interceptorComponent3);
+                interceptorComponent3,
+                variableRangeInterceptorsEnabled);
             return interceptorStation3;
         }
 
-        private InterceptorStation CreateInterceptorStation2(ThreatController threatController)
+        private InterceptorStation CreateInterceptorStation2(ThreatController threatController, bool variableRangeInterceptorsEnabled)
         {
             var interceptorComponent2 = new InterceptorsInSpaceComponent(this, StationLocation.Interceptor2);
             var interceptorStation2 = new InterceptorStation(
                 StationLocation.Interceptor2,
                 threatController,
-                interceptorComponent2);
+                interceptorComponent2,
+                variableRangeInterceptorsEnabled);
             return interceptorStation2;
         }
 
-        private InterceptorStation CreateInterceptorStation1(ThreatController threatController)
+        private InterceptorStation CreateInterceptorStation1(ThreatController threatController, bool variableRangeInterceptorsEnabled)
         {
             var interceptorComponent1 = new InterceptorsInSpaceComponent(this, StationLocation.Interceptor1);
             var interceptorStation1 = new InterceptorStation(
                 StationLocation.Interceptor1,
                 threatController,
-                interceptorComponent1);
+                interceptorComponent1,
+                variableRangeInterceptorsEnabled);
             return interceptorStation1;
         }
 
