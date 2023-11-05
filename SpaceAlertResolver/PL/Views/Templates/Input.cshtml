@@ -21,6 +21,12 @@
         Campaign Mode (damage carryover)
     </label>
 </div>
+<div class="checkbox">
+    <label type="checkbox">
+        <input type="checkbox" ng-model="newGameData.variableRangeInterceptors" />
+        Enable variable range interceptors
+    </label>
+</div>
 <div>
     <div ng-repeat="player in newGameData.players" class="panel panel-default player-panel" ng-if="player.isInGame">
         <div class="panel-heading">

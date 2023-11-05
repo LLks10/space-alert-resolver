@@ -26,6 +26,7 @@ angular.module("spaceAlertModule")
                     internalThreats: []
                 };
                 newGameData.damage = {};
+                newGameData.variableRangeInterceptors = true;
                 newGameData.updateAllSelectedTracks = function() {
                     newGameData.allSelectedTracks = [
                         newGameData.selectedTracks.redTrack,
@@ -147,7 +148,8 @@ angular.module("spaceAlertModule")
                         whiteTrack: newGameData.selectedTracks.whiteTrack,
                         blueTrack: newGameData.selectedTracks.blueTrack,
                         internalTrack: newGameData.selectedTracks.internalTrack,
-                        initialDamageModels: damageModels
+                        initialDamageModels: damageModels,
+                        variableRangeInterceptors: newGameData.variableRangeInterceptors
                     };
                     return game;
                 }
