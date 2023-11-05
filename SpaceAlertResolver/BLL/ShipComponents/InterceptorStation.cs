@@ -19,7 +19,7 @@ namespace BLL.ShipComponents
         {
             MovingIn += UseBattleBots;
             InterceptorComponent = interceptorComponent;
-            VariableRangeInterceptorsEnabled = variableRangeInterceptorsEnabled && false;
+            VariableRangeInterceptorsEnabled = variableRangeInterceptorsEnabled;
         }
 
         private void PerformCAction(Player performingPlayer, int currentTurn)

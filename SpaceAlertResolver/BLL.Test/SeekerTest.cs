@@ -79,7 +79,7 @@ namespace BLL.Test
             var seeker = new Seeker{CurrentStation = currentStation};
             seeker.SetInitialPlacement(4);
             var threatController = new ThreatController(null, null, new List<ExternalThreat>(), new List<InternalThreat>(), null);
-            var mockSittingDuck = new Mock<SittingDuck>(MockBehavior.Strict, threatController, null, null);
+            var mockSittingDuck = new Mock<SittingDuck>(MockBehavior.Strict, threatController, null, null, true);
             foreach (var countByLocation in countsByLocation)
             {
                 var count = countByLocation.Value;
