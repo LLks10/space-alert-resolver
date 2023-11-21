@@ -67,13 +67,13 @@ namespace BLL.Threats.Internal.Minor.Yellow
 
         private class PoisonedPlayers : InternalThreat
         {
-            private readonly HashSet<Player> poisonedPlayers;
+            private readonly List<Player> poisonedPlayers;
 
             internal PoisonedPlayers(InternalThreat parent)
                 : base(parent.ThreatType, parent.Difficulty, 0, parent.Speed, new List<StationLocation>(), null)
             {
                 Parent = parent;
-                poisonedPlayers = new HashSet<Player>();
+                poisonedPlayers = new List<Player>();
             }
 
             public void PoisonPlayer(Player player)
