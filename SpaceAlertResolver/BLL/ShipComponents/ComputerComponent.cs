@@ -35,7 +35,7 @@ namespace BLL.ShipComponents
         {
             if (maintenanceNeededThisPhase)
             {
-                foreach (var player in players.Where(p => p.CurrentStation.StationLocation.IsOnShip()))
+                foreach (var player in players.Where(p => p.IsOnShip()))
                     player.ShiftAfterPlayerActions(currentTurn);
                 maintenanceNeededThisPhase = false;
                 RemainingComputerCheckTurns.Remove(currentTurn);

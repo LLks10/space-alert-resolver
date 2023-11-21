@@ -90,8 +90,8 @@
 					<th>Unit</th>
 					<th>Penalty</th>
 				</tr>
-				<tr ng-repeat="player in getCurrentSubPhase().knockedOutPlayers">
-					<td>{{player.playerColor}}</td>
+				<tr ng-repeat="playerColor in getCurrentSubPhase().knockedOutPlayers">
+					<td>{{playerColor}}</td>
 					<td>-2</td>
 				</tr>
 				<tr ng-if="getCurrentSubPhase().knockedOutBattleBots > 0">

@@ -30,7 +30,7 @@ namespace BLL.Threats.Internal.Serious.Red
 
         protected override void PerformXAction(int currentTurn)
         {
-            if (attachedPlayer != null && !attachedPlayer.IsKnockedOut && attachedPlayer.CurrentStation.StationLocation.IsOnShip())
+            if (attachedPlayer != null && !attachedPlayer.IsKnockedOut && attachedPlayer.IsOnShip())
                 SittingDuck.DrainEnergy(attachedPlayer.CurrentStation.StationLocation, 1);
         }
 

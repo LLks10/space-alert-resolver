@@ -210,7 +210,7 @@ namespace BLL
             var playersWithBattleBots = locations
                 .Select(location => StationsByLocation[location])
                 .SelectMany(zone => zone.Players)
-                .Where(player => player.BattleBots != null);
+                .Where(player => player.BattleBots != null).ToList();
             KnockOut(playersWithBattleBots);
         }
 
@@ -219,13 +219,13 @@ namespace BLL
             var playersWithBattleBots = locations
                 .Select(location => StationsByLocation[location])
                 .SelectMany(zone => zone.Players)
-                .Where(player => player.BattleBots == null);
+                .Where(player => player.BattleBots == null).ToList();
             KnockOut(playersWithBattleBots);
         }
 
         public void KnockOutPlayers(IEnumerable<StationLocation> locations)
         {
-            var players = locations.SelectMany(location => StationsByLocation[location].Players);
+            var players = locations.SelectMany(location => StationsByLocation[location].Players).ToList();
             KnockOut(players);
         }
 

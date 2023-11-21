@@ -47,11 +47,11 @@ namespace BLL.Players
                 IsKnockedOut = true;
             if (BattleBots != null)
                 BattleBots.IsDisabled = true;
-            while (!CurrentStation.StationLocation.IsOnShip())
-            {
-                CurrentStation.Players.Remove(this);
-                SittingDuck.RedZone.UpperRedStation.MovePlayerIn(this);
-            }
+            if (Interceptors != null)
+                SittingDuck.RedZone.UpperRedStation.InterceptorComponent.DockInterceptors(this);
+
+			CurrentStation.Players.Remove(this);
+            CurrentStation = null;
         }
 
         public int Index { get; }
@@ -157,6 +157,13 @@ namespace BLL.Players
         public bool IsPerformingAdvancedSpecialOps(int currentTurn)
         {
             return Specialization == PlayerSpecialization.SpecialOps && IsPerformingAdvancedSpecialization(currentTurn);
+        }
+
+        public bool IsOnShip()
+        {
+            if (CurrentStation == null)
+                return false;
+            return CurrentStation.StationLocation.IsOnShip();
         }
 
         public void PadPlayerActions(int numberOfTurns)

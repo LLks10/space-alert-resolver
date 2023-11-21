@@ -39,10 +39,6 @@ namespace PL.Models
             if (player.Interceptors != null)
                 Interceptors = new InterceptorsModel();
             PlayerSpecialization = player.Specialization;
-
-            //Uncomment this to get battle bots in turn 1 on the client.
-            //else if (player.PlayerColor == PlayerColor.Red || player.PlayerColor == PlayerColor.Green)
-            //    BattleBots = new BattleBotsModel(new BattleBots());
         }
     }
 }

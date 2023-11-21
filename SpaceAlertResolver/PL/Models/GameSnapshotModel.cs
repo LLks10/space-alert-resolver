@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using BLL;
+using BLL.Players;
 using BLL.Threats.Internal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace PL.Models
 {
@@ -27,7 +30,8 @@ namespace PL.Models
         public IEnumerable<int> ObservationScores { get; set; }
         public int TotalObservationScore { get; set; }
 
-        public IEnumerable<PlayerModel> KnockedOutPlayers { get; set; }
+        [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
+        public IEnumerable<PlayerColor> KnockedOutPlayers { get; set; }
         public int KnockedOutBattleBots { get; set; }
         public int TotalKnockedOutPenalty => KnockedOutPlayers.Count() * -2 - KnockedOutBattleBots;
 
@@ -59,11 +63,11 @@ namespace PL.Models
             SurvivedThreats = game.ThreatController.SurvivedThreats.Select(threat => new ThreatModel(threat)).ToList();
             ObservationScores = game.SittingDuck.WhiteZone.LowerWhiteStation.VisualConfirmationComponent.BestConfirmationPerPhase.ToList();
             TotalObservationScore = game.SittingDuck.WhiteZone.LowerWhiteStation.VisualConfirmationComponent.TotalVisualConfirmationPoints;
-            KnockedOutPlayers = game.Players.Where(player => player.IsKnockedOut).Select(player => new PlayerModel(player)).ToList();
+            KnockedOutPlayers = game.Players.Where(player => player.IsKnockedOut).Select(player => player.PlayerColor).ToList();
             KnockedOutBattleBots = game.Players.Count(player => player.BattleBots is { IsDisabled: true });
             KnockedOutBattleBots += game.SittingDuck.RedZone.LowerRedStation.BattleBotsComponent.BattleBots is { IsDisabled: true } ? 1 : 0;
             KnockedOutBattleBots += game.SittingDuck.BlueZone.UpperBlueStation.BattleBotsComponent.BattleBots is { IsDisabled: true } ? 1 : 0;
-            Players = game.Players.Select(player => new PlayerModel(player)).ToList();
+            Players = game.Players.Where(player => !player.IsKnockedOut).Select(player => new PlayerModel(player)).ToList();
         }
 
         private static IEnumerable<InternalThreat> OrphanThreatRepresentatives(List<InternalThreat> internalThreats)
