@@ -43,13 +43,15 @@ namespace BLL.Players
             var isImmune = HasSpecialOpsProtection ||
                 CurrentStation.Players.Any(player => player.PreventsKnockOut) ||
                 (wasCausedByOwnAction && HadSpecialOpsProtectionWhenActing);
-            if (!isImmune)
-                IsKnockedOut = true;
+            if (isImmune)
+                return;
+
             if (BattleBots != null)
                 BattleBots.IsDisabled = true;
             if (Interceptors != null)
                 SittingDuck.RedZone.UpperRedStation.InterceptorComponent.DockInterceptors(this);
 
+			IsKnockedOut = true;
             foreach(var actList in ActionsList)
                 actList.MarkAllActionsPerformed();
 			CurrentStation.Players.Remove(this);
