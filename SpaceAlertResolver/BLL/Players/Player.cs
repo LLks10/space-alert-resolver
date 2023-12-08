@@ -50,6 +50,8 @@ namespace BLL.Players
             if (Interceptors != null)
                 SittingDuck.RedZone.UpperRedStation.InterceptorComponent.DockInterceptors(this);
 
+            foreach(var actList in ActionsList)
+                actList.MarkAllActionsPerformed();
 			CurrentStation.Players.Remove(this);
             CurrentStation = null;
         }

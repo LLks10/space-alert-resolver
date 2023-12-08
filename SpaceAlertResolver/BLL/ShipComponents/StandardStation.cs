@@ -95,9 +95,9 @@ namespace BLL.ShipComponents
 
         public override void MovePlayerIn(Player performingPlayer, int? currentTurn = null)
         {
-            OnPlayerMovingIn(performingPlayer, currentTurn);
             Players.Add(performingPlayer);
             performingPlayer.CurrentStation = this;
+            OnPlayerMovingIn(performingPlayer, currentTurn);
         }
 
         public bool CanMoveOutTowardsRed()
