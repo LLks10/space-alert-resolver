@@ -59,7 +59,7 @@ angular.module("spaceAlertModule")
 
             $scope.ok = function() {
                 var newThreat = cloneThreat($scope.selectedThreatToAdd);
-                newThreat.timeAppears = $scope.selectedTimeOfThreatToAdd;
+                newThreat.timeAppears = $scope.selectedTimeOfThreatToAdd ?? 0;
                 $uibModalInstance.close(newThreat);
             };
 
